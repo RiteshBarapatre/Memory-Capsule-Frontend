@@ -49,7 +49,7 @@ function Navbar() {
         </div>
 
         <div className="flex items-center gap-2 lg:gap-4">
-          <div className="hidden md:flex items-center">
+          {/* <div className="hidden md:flex items-center">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
@@ -58,7 +58,7 @@ function Navbar() {
                 className="w-64 h-9 pl-9 pr-4 rounded-lg bg-secondary/50 border border-glass-border text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
               />
             </div>
-          </div>
+          </div> */}
 
           <Link to="/create">
             <Button
