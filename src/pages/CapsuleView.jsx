@@ -233,12 +233,6 @@ function CapsuleView() {
                 <Calendar className="h-4 w-4" />
                 Created {formatDate(currentCapsule.createdAt)}
               </div>
-              {currentCapsule.viewCount > 0 && (
-                <div className="flex items-center gap-1">
-                  <Eye className="h-4 w-4" />
-                  {currentCapsule.viewCount} view{currentCapsule.viewCount !== 1 ? 's' : ''}
-                </div>
-              )}
               {isLocked && currentCapsule.unlockDate && !timeInfo.canUnlock && (
                 <div className="flex items-center gap-1 text-neon-cyan">
                   <Clock className="h-4 w-4" />
