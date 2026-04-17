@@ -1,7 +1,8 @@
 import axios from 'axios'
 import useAuthStore from '../store/authStore'
 
-const API_BASE_URL = '/api'
+// Prefer VITE_API_BASE_URL in dev so requests hit the real backend port (e.g. 6000) without relying on the Vite proxy alone.
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
 
 const api = axios.create({
   baseURL: API_BASE_URL,

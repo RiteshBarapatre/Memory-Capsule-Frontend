@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { User, Mail, Lock, Eye, EyeOff, ArrowRight, Check } from 'lucide-react'
 import { toast } from 'sonner'
 import AnimatedButton from '../components/AnimatedButton'
+import GoogleIdentityLoginButton from '../components/GoogleIdentityLoginButton'
 import { useAuthStore } from '../store'
 import { authService } from '../services'
 import { cn, validateEmail, validatePassword } from '../utils/helpers'
@@ -16,6 +17,7 @@ const passwordRequirements = [
 function Signup() {
   const navigate = useNavigate()
   const { login, setLoading, isLoading } = useAuthStore()
+  const isGoogleEnabled = Boolean(import.meta.env.VITE_GOOGLE_CLIENT_ID)
   
   const [formData, setFormData] = useState({
     name: '',
@@ -77,6 +79,27 @@ function Signup() {
       navigate('/dashboard')
     } catch (error) {
       toast.error(error.message || 'Signup failed')
+      setErrors({ submit: error.message })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGoogleAuth = async (credentialResponse) => {
+    if (!credentialResponse?.credential) {
+      toast.error('Google signup failed. Please try again.')
+      return
+    }
+
+    setLoading(true)
+    setErrors({})
+    try {
+      const { user, token } = await authService.googleAuth(credentialResponse.credential)
+      login(user, token)
+      toast.success('Account created with Google!')
+      navigate('/dashboard')
+    } catch (error) {
+      toast.error(error.message || 'Google signup failed')
       setErrors({ submit: error.message })
     } finally {
       setLoading(false)
@@ -305,6 +328,28 @@ function Signup() {
               Create Account
               <ArrowRight className="h-5 w-5" />
             </AnimatedButton>
+
+            <div className="relative py-1">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-glass-border" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-3 text-muted-foreground">Or continue with</span>
+              </div>
+            </div>
+
+            {isGoogleEnabled ? (
+              <GoogleIdentityLoginButton
+                intent="signup"
+                onCredential={handleGoogleAuth}
+                disabled={isLoading}
+                text="signup_with"
+              />
+            ) : (
+              <p className="text-xs text-center text-muted-foreground">
+                Set `VITE_GOOGLE_CLIENT_ID` to enable Google signup.
+              </p>
+            )}
 
             <p className="text-xs text-muted-foreground text-center">
               By creating an account, you agree to our{' '}

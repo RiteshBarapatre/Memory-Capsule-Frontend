@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react'
 import { toast } from 'sonner'
 import AnimatedButton from '../components/AnimatedButton'
+import GoogleIdentityLoginButton from '../components/GoogleIdentityLoginButton'
 import { useAuthStore } from '../store'
 import { authService } from '../services'
 import { cn, validateEmail } from '../utils/helpers'
@@ -21,6 +22,7 @@ function Login() {
   const [errors, setErrors] = useState({})
 
   const from = location.state?.from?.pathname || '/dashboard'
+  const isGoogleEnabled = Boolean(import.meta.env.VITE_GOOGLE_CLIENT_ID)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -56,6 +58,27 @@ function Login() {
       navigate(from, { replace: true })
     } catch (error) {
       toast.error(error.message || 'Login failed')
+      setErrors({ submit: error.message })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGoogleAuth = async (credentialResponse) => {
+    if (!credentialResponse?.credential) {
+      toast.error('Google login failed. Please try again.')
+      return
+    }
+
+    setLoading(true)
+    setErrors({})
+    try {
+      const { user, token } = await authService.googleAuth(credentialResponse.credential)
+      login(user, token)
+      toast.success('Logged in with Google successfully!')
+      navigate(from, { replace: true })
+    } catch (error) {
+      toast.error(error.message || 'Google login failed')
       setErrors({ submit: error.message })
     } finally {
       setLoading(false)
@@ -179,6 +202,28 @@ function Login() {
               Sign In
               <ArrowRight className="h-5 w-5" />
             </AnimatedButton>
+
+            <div className="relative py-1">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-glass-border" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-3 text-muted-foreground">Or continue with</span>
+              </div>
+            </div>
+
+            {isGoogleEnabled ? (
+              <GoogleIdentityLoginButton
+                intent="login"
+                onCredential={handleGoogleAuth}
+                disabled={isLoading}
+                text="signin_with"
+              />
+            ) : (
+              <p className="text-xs text-center text-muted-foreground">
+                Set `VITE_GOOGLE_CLIENT_ID` to enable Google login.
+              </p>
+            )}
           </form>
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
