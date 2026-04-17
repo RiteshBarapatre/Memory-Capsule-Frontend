@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   LayoutDashboard, 
@@ -32,6 +32,8 @@ function Sidebar() {
   const { sidebarOpen } = useUIStore()
   const { filter, setFilter, getCapsuleStats } = useCapsuleStore()
   const stats = getCapsuleStats()
+  const location = useLocation()
+  const isVaultActive = location.pathname === '/dashboard'
 
   return (
     <motion.aside
@@ -75,55 +77,64 @@ function Sidebar() {
           ))}
         </nav>
 
-        <div className="mt-6 pt-6 border-t border-glass-border">
-          <AnimatePresence>
-            {sidebarOpen && (
-              <motion.h4
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="px-3 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
-              >
-                Filters
-              </motion.h4>
-            )}
-          </AnimatePresence>
-          
-          <div className="space-y-1">
-            {filterItems.map((item) => {
-              const count = item.filter === 'all' ? stats.total : stats[item.filter]
-              return (
-                <button
-                  key={item.filter}
-                  onClick={() => setFilter(item.filter)}
-                  className={cn(
-                    'w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200',
-                    'hover:bg-secondary/50',
-                    filter === item.filter && 'bg-accent/20 text-accent',
-                    !sidebarOpen && 'justify-center'
-                  )}
-                >
-                  <item.icon className="h-4 w-4 shrink-0" />
-                  <AnimatePresence>
-                    {sidebarOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, width: 0 }}
-                        animate={{ opacity: 1, width: 'auto' }}
-                        exit={{ opacity: 0, width: 0 }}
-                        className="flex items-center justify-between flex-1 overflow-hidden"
-                      >
-                        <span className="text-sm whitespace-nowrap">{item.label}</span>
-                        <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
-                          {count}
-                        </span>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </button>
-              )
-            })}
-          </div>
-        </div>
+        <AnimatePresence>
+          {isVaultActive && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-6 pt-6 border-t border-glass-border"
+            >
+              <AnimatePresence>
+                {sidebarOpen && (
+                  <motion.h4
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="px-3 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
+                  >
+                    Filters
+                  </motion.h4>
+                )}
+              </AnimatePresence>
+              
+              <div className="space-y-1">
+                {filterItems.map((item) => {
+                  const count = item.filter === 'all' ? stats.total : stats[item.filter]
+                  return (
+                    <button
+                      key={item.filter}
+                      onClick={() => setFilter(item.filter)}
+                      className={cn(
+                        'w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200',
+                        'hover:bg-secondary/50',
+                        filter === item.filter && 'bg-accent/20 text-accent',
+                        !sidebarOpen && 'justify-center'
+                      )}
+                    >
+                      <item.icon className="h-4 w-4 shrink-0" />
+                      <AnimatePresence>
+                        {sidebarOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, width: 0 }}
+                            animate={{ opacity: 1, width: 'auto' }}
+                            exit={{ opacity: 0, width: 0 }}
+                            className="flex items-center justify-between flex-1 overflow-hidden"
+                          >
+                            <span className="text-sm whitespace-nowrap">{item.label}</span>
+                            <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
+                              {count}
+                            </span>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </button>
+                  )
+                })}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <div className="mt-auto pt-4">
           <AnimatePresence>
