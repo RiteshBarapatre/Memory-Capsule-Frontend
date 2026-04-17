@@ -177,7 +177,7 @@ function Login() {
                 />
                 <span className="text-sm text-muted-foreground">Remember me</span>
               </label>
-              <button type="button" className="text-sm text-primary hover:underline">
+              <button type="button" className="text-sm text-primary hover:underline cursor-pointer">
                 Forgot password?
               </button>
             </div>

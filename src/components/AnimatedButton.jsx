@@ -4,12 +4,12 @@ import { Loader2 } from 'lucide-react'
 import { cn } from '../utils/helpers'
 
 const variants = {
-  primary: 'bg-gradient-to-r from-neon-cyan to-neon-purple text-background hover:opacity-90',
+  primary: 'bg-gradient-to-r from-neon-cyan to-neon-purple text-background hover:opacity-90 cursor-pointer',
   secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-  outline: 'border border-glass-border bg-transparent hover:bg-secondary/50',
-  ghost: 'hover:bg-secondary/50',
+  outline: 'border border-glass-border bg-transparent hover:bg-secondary/50 cursor-pointer',
+  ghost: 'hover:bg-secondary/50 cursor-pointer',
   destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-  glow: 'bg-gradient-to-r from-neon-cyan to-neon-purple text-background neon-glow hover:opacity-90',
+  glow: 'bg-gradient-to-r from-neon-cyan to-neon-purple text-background neon-glow hover:opacity-90 cursor-pointer',
 }
 
 const sizes = {
