@@ -1,3 +1,4 @@
+import api from './api'
 import { mockUsers, generateToken, delay } from '../utils/mockData'
 
 // Simulated auth service with mock data
@@ -39,6 +40,24 @@ export const authService = {
     const token = generateToken()
     
     return { user: newUser, token }
+  },
+
+  async googleAuth(credential) {
+    try {
+      const response = await api.post('/auth/google', { credential })
+      return response.data
+    } catch (error) {
+      if (!error.response) {
+        throw new Error(
+          'Cannot reach the API server. Make sure the backend is running and VITE_API_PROXY_TARGET matches its port.'
+        )
+      }
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        'Google authentication failed'
+      throw new Error(message)
+    }
   },
   
   async getCurrentUser() {
