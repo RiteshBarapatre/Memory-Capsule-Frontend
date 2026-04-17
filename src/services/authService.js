@@ -49,7 +49,7 @@ export const authService = {
     } catch (error) {
       if (!error.response) {
         throw new Error(
-          'Cannot reach the API server. Make sure the backend is running and VITE_API_PROXY_TARGET matches its port.'
+          'Cannot reach the API server. Start the backend (e.g. npm run dev in Memory-Capsule-Backend) and set VITE_API_BASE_URL to match its URL (see .env.example).'
         )
       }
       const message =

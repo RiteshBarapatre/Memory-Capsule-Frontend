@@ -4,8 +4,11 @@ import path from 'path'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
+  // Default matches Memory-Capsule-Backend `.env` PORT=6000 when present
   const apiProxyTarget =
-    env.VITE_API_PROXY_TARGET || env.VITE_BACKEND_URL || 'http://localhost:4000'
+    env.VITE_API_PROXY_TARGET ||
+    env.VITE_BACKEND_URL ||
+    'http://localhost:6000'
 
   return {
     plugins: [react()],
