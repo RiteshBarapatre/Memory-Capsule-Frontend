@@ -1,0 +1,175 @@
+export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+export const generateToken = () => {
+  return `token_${Math.random().toString(36).substring(2)}${Date.now()}`
+}
+
+export const mockUsers = [
+  {
+    id: 'user_1',
+    name: 'Alex Chen',
+    email: 'alex@example.com',
+    password: 'password123',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=alex',
+    createdAt: '2024-01-15T10:30:00Z',
+  },
+  {
+    id: 'user_2',
+    name: 'Sam Rivera',
+    email: 'sam@example.com',
+    password: 'password123',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=sam',
+    createdAt: '2024-02-20T14:45:00Z',
+  },
+]
+
+export const mockCapsules = [
+  {
+    id: 'capsule_1',
+    title: 'Letter to Future Self',
+    content: 'Dear future me, I hope you remembered to chase your dreams and never let fear hold you back. Remember the person you wanted to become.',
+    status: 'locked',
+    rule: 'unlock_at_date',
+    unlockDate: '2025-12-31T23:59:59Z',
+    createdAt: '2024-01-20T09:00:00Z',
+    userId: 'user_1',
+    media: [],
+    viewCount: 0,
+  },
+  {
+    id: 'capsule_2',
+    title: 'Wedding Day Memories',
+    content: 'The most beautiful day of my life. I want to remember every detail - the way the sun shone through the windows, the tears of joy, the laughter of family.',
+    status: 'unlocked',
+    rule: 'unlock_at_date',
+    unlockDate: '2024-06-15T00:00:00Z',
+    unlockedAt: '2024-06-15T10:30:00Z',
+    createdAt: '2024-06-15T08:00:00Z',
+    userId: 'user_1',
+    media: [{ type: 'image', url: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=400' }],
+    viewCount: 5,
+  },
+  {
+    id: 'capsule_3',
+    title: 'Secret Message',
+    content: 'This message will self-destruct after viewing. Some things are meant to be seen only once.',
+    status: 'locked',
+    rule: 'destroy_after_view',
+    unlockDate: null,
+    createdAt: '2024-03-10T15:20:00Z',
+    userId: 'user_1',
+    media: [],
+    viewCount: 0,
+  },
+  {
+    id: 'capsule_4',
+    title: 'Graduation Speech Draft',
+    content: 'As we stand at this crossroads, we are not just graduating from an institution, but stepping into the architects of tomorrow. May we build with courage and compassion.',
+    status: 'expired',
+    rule: 'auto_expire',
+    unlockDate: '2024-05-30T00:00:00Z',
+    expiresAfter: 7,
+    createdAt: '2024-05-20T11:00:00Z',
+    expiredAt: '2024-06-06T00:00:00Z',
+    userId: 'user_1',
+    media: [],
+    viewCount: 2,
+  },
+  {
+    id: 'capsule_5',
+    title: 'First Apartment Keys',
+    content: 'My first place on my own! These keys represent independence, growth, and a new chapter. Never forget the excitement of this moment.',
+    status: 'unlocked',
+    rule: 'unlock_at_date',
+    unlockDate: '2024-04-01T00:00:00Z',
+    unlockedAt: '2024-04-01T12:00:00Z',
+    createdAt: '2024-03-28T16:45:00Z',
+    userId: 'user_1',
+    media: [{ type: 'image', url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400' }],
+    viewCount: 3,
+  },
+  {
+    id: 'capsule_6',
+    title: 'Voice Note: Late Night Thoughts',
+    content: 'Sometimes the most profound realizations come at 3 AM when the world is quiet and your mind finally has space to breathe.',
+    status: 'locked',
+    rule: 'unlock_at_date',
+    unlockDate: '2026-01-01T00:00:00Z',
+    createdAt: '2024-02-14T03:30:00Z',
+    userId: 'user_1',
+    media: [{ type: 'audio', url: '/audio/voice-note.mp3', duration: 45 }],
+    viewCount: 0,
+  },
+  {
+    id: 'capsule_7',
+    title: 'Destroyed Memory',
+    content: 'This capsule was viewed once and then destroyed as requested.',
+    status: 'destroyed',
+    rule: 'destroy_after_view',
+    unlockDate: null,
+    createdAt: '2024-01-05T20:00:00Z',
+    destroyedAt: '2024-01-10T14:22:00Z',
+    userId: 'user_1',
+    media: [],
+    viewCount: 1,
+  },
+]
+
+export const mockGhostPosts = [
+  {
+    id: 'ghost_1',
+    content: 'Sometimes the hardest goodbye is the one you never got to say.',
+    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    expiresAt: new Date(Date.now() + 22 * 60 * 60 * 1000).toISOString(),
+    fadeLevel: 0.1,
+  },
+  {
+    id: 'ghost_2',
+    content: 'I still think about that moment every single day. It changed everything.',
+    createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+    expiresAt: new Date(Date.now() + 18 * 60 * 60 * 1000).toISOString(),
+    fadeLevel: 0.25,
+  },
+  {
+    id: 'ghost_3',
+    content: 'The universe has a funny way of bringing people together exactly when you need them.',
+    createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+    expiresAt: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString(),
+    fadeLevel: 0.5,
+  },
+  {
+    id: 'ghost_4',
+    content: 'I forgave you today. Not for you, but for myself.',
+    createdAt: new Date(Date.now() - 18 * 60 * 60 * 1000).toISOString(),
+    expiresAt: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString(),
+    fadeLevel: 0.75,
+  },
+  {
+    id: 'ghost_5',
+    content: 'Some memories are too precious to share but too heavy to carry alone.',
+    createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+    expiresAt: new Date(Date.now() + 23 * 60 * 60 * 1000).toISOString(),
+    fadeLevel: 0.05,
+  },
+]
+
+export const capsuleRules = [
+  {
+    id: 'unlock_at_date',
+    label: 'Unlock at future date',
+    description: 'Capsule remains locked until a specific date and time',
+    icon: 'Calendar',
+  },
+  {
+    id: 'destroy_after_view',
+    label: 'Destroy after one view',
+    description: 'Capsule self-destructs after being viewed once',
+    icon: 'Flame',
+  },
+  {
+    id: 'auto_expire',
+    label: 'Auto-expire after duration',
+    description: 'Capsule expires and becomes inaccessible after set time',
+    icon: 'Clock',
+  },
+]
