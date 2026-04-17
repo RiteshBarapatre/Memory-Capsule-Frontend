@@ -33,7 +33,7 @@ export const mockCapsules = [
     unlockDate: '2025-12-31T23:59:59Z',
     createdAt: '2024-01-20T09:00:00Z',
     userId: 'user_1',
-    media: [],
+    media: [{type:'text'}],
     viewCount: 0,
   },
   {
@@ -58,7 +58,7 @@ export const mockCapsules = [
     unlockDate: null,
     createdAt: '2024-03-10T15:20:00Z',
     userId: 'user_1',
-    media: [],
+    media: [{type:'text'}],
     viewCount: 0,
   },
   {
@@ -72,7 +72,7 @@ export const mockCapsules = [
     createdAt: '2024-05-20T11:00:00Z',
     expiredAt: '2024-06-06T00:00:00Z',
     userId: 'user_1',
-    media: [],
+    media: [{type:'text'}],
     viewCount: 2,
   },
   {
@@ -110,7 +110,7 @@ export const mockCapsules = [
     createdAt: '2024-01-05T20:00:00Z',
     destroyedAt: '2024-01-10T14:22:00Z',
     userId: 'user_1',
-    media: [],
+    media: [{type:'text'}],
     viewCount: 1,
   },
 ]

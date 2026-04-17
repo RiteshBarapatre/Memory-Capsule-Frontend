@@ -83,7 +83,7 @@ function CapsuleCard({ capsule, index = 0 }) {
               {capsule.media.map((item, i) => (
                 <div
                   key={i}
-                  className="w-12 h-12 rounded-lg bg-secondary/50 overflow-hidden"
+                   className={item.type !== 'text' ? 'w-12 h-12 rounded-lg bg-secondary/50 overflow-hidden' : undefined}
                 >
                   {item.type === 'image' && (
                     <img
@@ -91,6 +91,8 @@ function CapsuleCard({ capsule, index = 0 }) {
                       alt=""
                       className="w-full h-full object-cover"
                     />
+                  )}
+                  {item.type === 'text' && (<div className="space h-12"></div>
                   )}
                   {item.type === 'audio' && (
                     <div className="w-full h-full flex items-center justify-center">
