@@ -27,6 +27,7 @@ function CapsuleView() {
   const [showUnlockAnimation, setShowUnlockAnimation] = useState(false)
   const [showDestroyAnimation, setShowDestroyAnimation] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [forceDestroyed, setForceDestroyed] = useState(false)
 
   useEffect(() => {
     const fetchCapsule = async () => {
@@ -63,6 +64,8 @@ function CapsuleView() {
       capsuleService.markCapsuleDestroyed(id).catch((error) => {
         console.error("Failed to mark capsule destroyed:", error);
       });
+
+      setForceDestroyed(true);
 
       toast.info("This capsule has been opened and will be permanently destroyed when you leave.");
     }
@@ -452,7 +455,7 @@ function CapsuleView() {
             )}
 
             {/* Destroyed State */}
-            {isDestroyed && (
+            {currentCapsule.status === "destroyed" && (
               <div className="text-center py-12">
                 <div className="w-20 h-20 mx-auto rounded-full bg-destructive/20 flex items-center justify-center mb-4">
                   <Flame className="h-10 w-10 text-destructive" />

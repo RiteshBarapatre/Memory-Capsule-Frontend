@@ -70,10 +70,10 @@ function Navbar() {
             </Button>
           </Link>
 
-          <Button variant="ghost" size="icon" className="relative">
+          {/* <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />
             <span className="absolute top-1 right-1 w-2 h-2 bg-neon-pink rounded-full" />
-          </Button>
+          </Button> */}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
