@@ -5,6 +5,7 @@ import {
   Lock, Unlock, ArrowLeft, Calendar, Eye, 
   Flame, Clock, Trash2, Share2 
 } from 'lucide-react'
+import { playUIAudio } from '../utils/sound'
 import { toast } from 'sonner'
 import PageTransition from '../components/PageTransition'
 import AnimatedButton from '../components/AnimatedButton'
@@ -47,6 +48,7 @@ function CapsuleView() {
     try {
       const updated = await capsuleService.unlockCapsule(id)
       setShowUnlockAnimation(true)
+      playUIAudio('confirm')
       
       setTimeout(() => {
         setCurrentCapsule(updated)
@@ -55,6 +57,7 @@ function CapsuleView() {
         
         if (updated.rule === 'destroy_after_view') {
           setTimeout(() => {
+            playUIAudio('danger')
             setShowDestroyAnimation(true)
             setTimeout(() => {
               updateCapsule(id, { status: 'destroyed' })
@@ -168,21 +171,29 @@ function CapsuleView() {
               exit={{ opacity: 0 }}
               className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-lg"
             >
-              <motion.div className="text-center">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1, rotate: [0, -10, 10, -10, 0] }}
+                transition={{ duration: 0.8 }}
+                className="text-center"
+              >
                 <motion.div
-                  className="w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center"
-                  animate={{ 
-                    scale: [1, 1.2, 0],
-                    opacity: [1, 1, 0],
+                  className="w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center neon-glow"
+                  animate={{
+                    boxShadow: [
+                      '0 0 20px rgba(255, 118, 117, 0.65)',
+                      '0 0 60px rgba(255, 118, 117, 0.95)',
+                      '0 0 20px rgba(255, 118, 117, 0.65)',
+                    ],
                   }}
-                  transition={{ duration: 2.5 }}
+                  transition={{ duration: 1, repeat: Infinity }}
                 >
                   <Flame className="h-16 w-16 text-background" />
                 </motion.div>
                 <motion.p
-                  initial={{ opacity: 1 }}
-                  animate={{ opacity: 0 }}
-                  transition={{ delay: 1.5, duration: 1 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
                   className="text-2xl font-bold mt-6 text-destructive"
                 >
                   Self-Destructing...
@@ -306,7 +317,7 @@ function CapsuleView() {
                 
                 {/* Media */}
                 {currentCapsule.media && currentCapsule.media.length > 0 && (
-                  <div className="mt-6 grid grid-cols-2 gap-4">
+                  <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                     {currentCapsule.media.map((item, index) => (
                       <motion.div
                         key={index}
@@ -323,24 +334,40 @@ function CapsuleView() {
                           />
                         )}
                         {item.type === 'audio' && (
-                          <div className="h-48 flex items-center justify-center">
-                            <div className="text-center">
-                              <div className="flex gap-1 items-end justify-center h-8 mb-2">
-                                {[1, 2, 3, 4, 5].map((n) => (
-                                  <motion.div
-                                    key={n}
-                                    className="w-2 bg-neon-cyan rounded-full"
-                                    animate={{ height: [8, 24, 8] }}
-                                    transition={{
-                                      duration: 0.6,
-                                      repeat: Infinity,
-                                      delay: n * 0.1,
-                                    }}
-                                  />
-                                ))}
-                              </div>
-                              <p className="text-sm text-muted-foreground">Voice Note</p>
+                          <div className="p-4 bg-gradient-to-br from-neon-cyan/5 via-neon-purple/5 to-neon-pink/5 border border-glass-border rounded-3xl">
+                            <div className="flex items-center justify-between mb-3 px-3 py-2 rounded-2xl bg-background/90 border border-glass-border">
+                              <span className="text-sm font-semibold text-foreground">Voice Note</span>
+                              <span className="text-xs text-muted-foreground">Audio</span>
                             </div>
+                            <div className="rounded-3xl overflow-hidden bg-background/95 border border-glass-border">
+                              <audio
+                                src={item.url}
+                                controls
+                                className="w-full"
+                                preload="metadata"
+                              />
+                            </div>
+                          </div>
+                        )}
+                        {item.type === 'video' && (
+                          <div className="p-4 bg-gradient-to-br from-neon-cyan/5 via-neon-purple/5 to-neon-pink/5 border border-glass-border rounded-3xl">
+                            <div className="flex items-center justify-between mb-3 px-3 py-2 rounded-2xl bg-background/90 border border-glass-border">
+                              <span className="text-sm font-semibold text-foreground">Memory Video</span>
+                              <span className="text-xs text-muted-foreground">Video</span>
+                            </div>
+                            <div className="rounded-3xl overflow-hidden bg-background/95 border border-glass-border">
+                              <video
+                                src={item.url}
+                                controls
+                                className="w-full h-48 object-cover"
+                                preload="metadata"
+                              />
+                            </div>
+                          </div>
+                        )}
+                        {item.type === 'text' && (
+                          <div className="p-4 text-sm text-muted-foreground">
+                            {item.content || 'Text content available'}
                           </div>
                         )}
                       </motion.div>

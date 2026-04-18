@@ -4,7 +4,7 @@ import { Upload, X, Image, Mic, File } from 'lucide-react'
 import { cn } from '../utils/helpers'
 
 function FileUploader({ 
-  accept = 'image/*,audio/*', 
+  accept = 'image/*,audio/*,video/*', 
   multiple = true, 
   maxFiles = 5,
   maxSize = 10 * 1024 * 1024, // 10MB
@@ -36,11 +36,16 @@ function FileUploader({
     const filesWithPreview = validFiles.map((file) => ({
       file,
       id: `${file.name}-${Date.now()}`,
-      preview: file.type.startsWith('image/') 
-        ? URL.createObjectURL(file) 
+      preview: file.type.startsWith('image/') || file.type.startsWith('video/')
+        ? URL.createObjectURL(file)
         : null,
-      type: file.type.startsWith('image/') ? 'image' : 
-            file.type.startsWith('audio/') ? 'audio' : 'file',
+      type: file.type.startsWith('image/')
+        ? 'image'
+        : file.type.startsWith('audio/')
+        ? 'audio'
+        : file.type.startsWith('video/')
+        ? 'video'
+        : 'text',
     }))
 
     const updatedFiles = [...files, ...filesWithPreview]
@@ -73,6 +78,7 @@ function FileUploader({
     switch (type) {
       case 'image': return Image
       case 'audio': return Mic
+      case 'video': return File
       default: return File
     }
   }
@@ -149,11 +155,20 @@ function FileUploader({
                   className="flex items-center gap-3 p-3 rounded-lg bg-secondary/30 border border-glass-border"
                 >
                   {item.preview ? (
-                    <img
-                      src={item.preview}
-                      alt=""
-                      className="w-12 h-12 rounded-lg object-cover"
-                    />
+                    item.type === 'video' ? (
+                      <video
+                        src={item.preview}
+                        className="w-12 h-12 rounded-lg object-cover"
+                        muted
+                        playsInline
+                      />
+                    ) : (
+                      <img
+                        src={item.preview}
+                        alt=""
+                        className="w-12 h-12 rounded-lg object-cover"
+                      />
+                    )
                   ) : (
                     <div className="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center">
                       <FileIcon className="h-5 w-5 text-muted-foreground" />

@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Calendar, Flame, Clock, Sparkles, ArrowRight, ArrowLeft } from 'lucide-react'
+import { playUIAudio } from '../utils/sound'
 import { toast } from 'sonner'
 import PageTransition from '../components/PageTransition'
 import AnimatedButton from '../components/AnimatedButton'
@@ -29,6 +30,8 @@ function CreateCapsule() {
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [showCreateAnimation, setShowCreateAnimation] = useState(false)
+  const animationTimeoutRef = useRef(null)
   
   const [formData, setFormData] = useState({
     title: '',
@@ -90,32 +93,53 @@ function CreateCapsule() {
   const nextStep = () => {
     if (validateStep(currentStep)) {
       setCurrentStep((prev) => Math.min(prev + 1, 3))
+      playUIAudio('step')
     }
   }
 
   const prevStep = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 1))
+    playUIAudio('step')
   }
 
   const handleSubmit = async () => {
     setIsSubmitting(true)
     try {
+      const uploadedMedia = await Promise.all(
+        formData.media.map(async (item) => {
+          if (item.file) {
+            const upload = await capsuleService.uploadMedia(item.file, item.type)
+            return {
+              type: item.type,
+              url: upload.url,
+              publicId: upload.publicId,
+            }
+          }
+
+          return {
+            type: item.type,
+            url: item.url,
+          }
+        })
+      )
+
       const capsuleData = {
         title: formData.title,
         content: formData.content,
         rule: formData.rule,
         unlockDate: formData.rule === 'unlock_at_date' ? formData.unlockDate : null,
         expiresAfter: formData.rule === 'auto_expire' ? formData.expiresAfter : null,
-        media: formData.media.map((f) => ({
-          type: f.type,
-          url: f.preview || '/placeholder.jpg',
-        })),
+        media: uploadedMedia,
       }
-      
+
       const newCapsule = await capsuleService.createCapsule(capsuleData)
       addCapsule(newCapsule)
       toast.success('Capsule created successfully!')
-      navigate('/dashboard')
+      playUIAudio('confirm')
+      setShowCreateAnimation(true)
+      animationTimeoutRef.current = window.setTimeout(() => {
+        navigate('/dashboard')
+      }, 1200)
     } catch (error) {
       toast.error('Failed to create capsule')
     } finally {
@@ -123,11 +147,59 @@ function CreateCapsule() {
     }
   }
 
+  useEffect(() => {
+    return () => {
+      if (animationTimeoutRef.current) {
+        window.clearTimeout(animationTimeoutRef.current)
+      }
+    }
+  }, [])
+
   const selectedRule = capsuleRules.find((r) => r.id === formData.rule)
 
   return (
     <PageTransition>
       <div className="max-w-3xl mx-auto">
+        <AnimatePresence>
+          {showCreateAnimation && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-lg"
+            >
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1, rotate: [0, -10, 10, -10, 0] }}
+                transition={{ duration: 0.8 }}
+                className="text-center"
+              >
+                <motion.div
+                  className="w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-neon-cyan to-neon-purple flex items-center justify-center neon-glow"
+                  animate={{
+                    boxShadow: [
+                      '0 0 20px var(--neon-cyan)',
+                      '0 0 60px var(--neon-cyan)',
+                      '0 0 20px var(--neon-cyan)',
+                    ],
+                  }}
+                  transition={{ duration: 1, repeat: Infinity }}
+                >
+                  <Sparkles className="h-16 w-16 text-background" />
+                </motion.div>
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="text-2xl font-bold mt-6 text-gradient"
+                >
+                  Sealing Capsule...
+                </motion.p>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Create Capsule</h1>

@@ -6,7 +6,7 @@ import PageTransition from "../components/PageTransition";
 import AnimatedButton from "../components/AnimatedButton";
 import { Skeleton } from "../components/LoadingSkeleton";
 import { ghostService } from "../services";
-import { cn, formatRelativeTime } from "../utils/helpers";
+import { cn, formatRelativeTime, formatTimeRemaining } from "../utils/helpers";
 
 function GhostCard({ post, index }) {
   const opacity = Math.max(0.3, 1 - post.fadeLevel);
@@ -37,12 +37,17 @@ function GhostCard({ post, index }) {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-foreground leading-relaxed">{post.content}</p>
-          <div className="flex items-center gap-2 mt-3 text-xs text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-2 mt-3 text-xs text-muted-foreground">
             <Clock className="h-3 w-3" />
             <span>{formatRelativeTime(post.createdAt)}</span>
             <span className="text-neon-pink">
               Fading: {Math.round(post.fadeLevel * 100)}%
             </span>
+            {post.timeRemaining != null && (
+              <span className="text-neon-cyan">
+                Time left: {formatTimeRemaining(post.timeRemaining)}
+              </span>
+            )}
           </div>
         </div>
       </div>
