@@ -8,7 +8,8 @@ import {
   Lock, 
   Unlock, 
   Clock, 
-  Flame 
+  Flame,
+  Film
 } from 'lucide-react'
 import { useUIStore, useCapsuleStore } from '../store'
 import { cn } from '../utils/helpers'
@@ -17,6 +18,7 @@ import { playUIAudio } from '../utils/sound'
 const navItems = [
   { path: '/dashboard', label: 'Vault', icon: LayoutDashboard },
   { path: '/create', label: 'Create Capsule', icon: PlusCircle },
+  { path: '/memory-flow', label: 'Memory Flow', icon: Film },
   { path: '/ghost-wall', label: 'Ghost Wall', icon: Ghost },
   { path: '/profile', label: 'Profile', icon: User },
 ]
