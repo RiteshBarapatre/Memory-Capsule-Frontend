@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Lock, Unlock, Clock, Flame, Eye, Calendar } from 'lucide-react'
-import { cn, formatDate, getTimeUntilUnlock, truncateText } from '../utils/helpers'
+import { cn, formatDate, getTimeUntilUnlock, getAutoExpireInfo, truncateText } from '../utils/helpers'
 import StatusBadge from './StatusBadge'
 
 const statusConfig = {
@@ -31,6 +31,7 @@ function CapsuleCard({ capsule, index = 0 }) {
   const config = statusConfig[capsule.status] || statusConfig.locked
   const StatusIcon = config.icon
   const timeInfo = capsule.unlockDate ? getTimeUntilUnlock(capsule.unlockDate) : null
+  const expireInfo = capsule.rule === 'auto_expire' ? getAutoExpireInfo(capsule) : null
 
   return (
     <motion.div
@@ -133,6 +134,13 @@ function CapsuleCard({ capsule, index = 0 }) {
               {formatDate(capsule.createdAt)}
             </div>
             
+            {capsule.rule === 'auto_expire' && expireInfo && capsule.status !== 'expired' && (
+              <div className="flex items-center gap-1 text-amber-400">
+                <Clock className="h-3 w-3" />
+                <span>Expires in {expireInfo.text}</span>
+              </div>
+            )}
+
             {capsule.status === 'locked' && timeInfo && !timeInfo.canUnlock && (
               <div className="flex items-center gap-1 text-neon-cyan">
                 <Lock className="h-3 w-3" />

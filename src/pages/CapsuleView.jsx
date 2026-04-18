@@ -14,7 +14,7 @@ import Modal from '../components/Modal'
 import { Skeleton } from '../components/LoadingSkeleton'
 import { useCapsuleStore, useAuthStore } from '../store'
 import { capsuleService } from '../services'
-import { formatDate, getTimeUntilUnlock, cn } from '../utils/helpers'
+import { formatDate, getTimeUntilUnlock, getAutoExpireInfo, cn } from '../utils/helpers'
 
 function CapsuleView() {
   const { id } = useParams()
@@ -164,6 +164,7 @@ function CapsuleView() {
   const timeInfo = currentCapsule.unlockDate
     ? getTimeUntilUnlock(currentCapsule.unlockDate)
     : { canUnlock: true };
+  const expireInfo = currentCapsule.rule === 'auto_expire' ? getAutoExpireInfo(currentCapsule) : null;
 
   const isLocked = currentCapsule.status === "locked";
   const isDestroyed = currentCapsule.status === "destroyed" || forceDestroyed;
@@ -313,6 +314,12 @@ function CapsuleView() {
                 <div className="flex items-center gap-1 text-neon-cyan">
                   <Clock className="h-4 w-4" />
                   Unlocks in {timeInfo.text}
+                </div>
+              )}
+              {expireInfo && currentCapsule.status !== 'expired' && (
+                <div className="flex items-center gap-1 text-amber-400">
+                  <Clock className="h-4 w-4" />
+                  Expires in {expireInfo.text}
                 </div>
               )}
             </div>

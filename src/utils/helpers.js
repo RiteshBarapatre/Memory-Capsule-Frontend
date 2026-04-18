@@ -91,6 +91,22 @@ export function getTimeUntilUnlock(unlockDate) {
   return { canUnlock: false, text: text.trim() || 'Less than a minute' }
 }
 
+export function getAutoExpireInfo(capsule) {
+  if (!capsule || capsule.rule !== 'auto_expire' || !capsule.expiresAfter || !capsule.createdAt) {
+    return null
+  }
+
+  const createdAt = new Date(capsule.createdAt)
+  const expiresAt = new Date(createdAt.getTime() + capsule.expiresAfter * 24 * 60 * 60 * 1000)
+  const remainingMs = expiresAt.getTime() - new Date().getTime()
+
+  return {
+    expiresAt,
+    remainingMs,
+    text: formatTimeRemaining(remainingMs),
+  }
+}
+
 export function getStatusColor(status) {
   const colors = {
     locked: 'neon-cyan',
