@@ -59,12 +59,6 @@ function CapsuleCard({ capsule, index = 0 }) {
             <div className="flex items-center gap-2">
               <StatusBadge status={capsule.status} />
             </div>
-            {capsule.viewCount > 0 && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Eye className="h-3 w-3" />
-                {capsule.viewCount}
-              </div>
-            )}
           </div>
 
           {/* Title */}
