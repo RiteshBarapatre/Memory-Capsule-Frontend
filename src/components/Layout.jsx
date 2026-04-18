@@ -1,11 +1,23 @@
-import { Outlet } from 'react-router-dom'
+import { useEffect, useRef } from 'react'
+import { Outlet, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Navbar from './Navbar'
 import Sidebar from './Sidebar'
 import { useUIStore } from '../store'
+import { playUIAudio } from '../utils/sound'
 
 function Layout() {
   const { sidebarOpen } = useUIStore()
+  const location = useLocation()
+  const firstRouteRender = useRef(true)
+
+  useEffect(() => {
+    if (firstRouteRender.current) {
+      firstRouteRender.current = false
+      return
+    }
+    playUIAudio('tab')
+  }, [location.pathname])
 
   return (
     <div className="min-h-screen bg-background gradient-mesh">

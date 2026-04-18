@@ -58,6 +58,20 @@ export function formatRelativeTime(date) {
     : `${years} year${years > 1 ? 's' : ''} ago`
 }
 
+export function formatTimeRemaining(milliseconds) {
+  if (milliseconds <= 0) return 'Expired'
+
+  const seconds = Math.floor(milliseconds / 1000)
+  const minutes = Math.floor(seconds / 60)
+  const hours = Math.floor(minutes / 60)
+  const days = Math.floor(hours / 24)
+
+  if (days > 0) return `${days} day${days > 1 ? 's' : ''}`
+  if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''}`
+  if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''}`
+  return `${seconds} second${seconds !== 1 ? 's' : ''}`
+}
+
 export function getTimeUntilUnlock(unlockDate) {
   const now = new Date()
   const target = new Date(unlockDate)
@@ -75,6 +89,22 @@ export function getTimeUntilUnlock(unlockDate) {
   if (minutes > 0 && days === 0) text += `${minutes}m`
   
   return { canUnlock: false, text: text.trim() || 'Less than a minute' }
+}
+
+export function getAutoExpireInfo(capsule) {
+  if (!capsule || capsule.rule !== 'auto_expire' || !capsule.expiresAfter || !capsule.createdAt) {
+    return null
+  }
+
+  const createdAt = new Date(capsule.createdAt)
+  const expiresAt = new Date(createdAt.getTime() + capsule.expiresAfter * 24 * 60 * 60 * 1000)
+  const remainingMs = expiresAt.getTime() - new Date().getTime()
+
+  return {
+    expiresAt,
+    remainingMs,
+    text: formatTimeRemaining(remainingMs),
+  }
 }
 
 export function getStatusColor(status) {

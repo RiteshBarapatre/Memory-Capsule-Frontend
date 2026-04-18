@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import useAuthStore from '../store/authStore'
 import { motion } from 'framer-motion'
-import { Plus, LayoutGrid, List, Lock, Unlock, Clock, Flame } from 'lucide-react'
+import { Plus, LayoutGrid, List, Lock, Unlock, Clock, Flame, Search } from 'lucide-react'
 import { toast } from 'sonner'
 import PageTransition from '../components/PageTransition'
 import Timeline from '../components/Timeline'
@@ -29,21 +30,32 @@ function Dashboard() {
   } = useCapsuleStore()
   
   const [viewMode, setViewMode] = useState('grid')
+  const [searchTerm, setSearchTerm] = useState('')
   const capsules = getFilteredCapsules()
   const stats = getCapsuleStats()
+
+  // Filter capsules based on search term
+  const filteredCapsules = capsules.filter(capsule =>
+    capsule.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    capsule.content.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
+  const user = useAuthStore((state) => state.user)
 
   useEffect(() => {
     const fetchCapsules = async () => {
       setLoading(true)
       try {
-        const data = await capsuleService.getCapsules()
+        const data = user?.id
+          ? await capsuleService.getCapsulesByUserId(user.id)
+          : await capsuleService.getCapsules()
         setCapsules(data)
       } catch (error) {
         toast.error('Failed to load capsules')
       }
     }
     fetchCapsules()
-  }, [setCapsules, setLoading])
+  }, [setCapsules, setLoading, user])
 
   return (
     <PageTransition>
@@ -89,38 +101,45 @@ function Dashboard() {
         </div>
 
         {/* Filters & View Toggle */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">
-              Showing {capsules.length} {filter === 'all' ? '' : filter} capsule{capsules.length !== 1 ? 's' : ''}
-            </span>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <div className="flex items-center rounded-lg bg-secondary/50 p-1">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={cn(
-                  'p-2 rounded-md transition-colors',
-                  viewMode === 'grid' 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'hover:bg-secondary'
-                )}
-              >
-                <LayoutGrid className="h-4 w-4" />
-              </button>
-              <button
-                onClick={() => setViewMode('timeline')}
-                className={cn(
-                  'p-2 rounded-md transition-colors',
-                  viewMode === 'timeline' 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'hover:bg-secondary'
-                )}
-              >
-                <List className="h-4 w-4" />
-              </button>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-muted-foreground flex-shrink-0">
+            Showing {filteredCapsules.length} {filter === 'all' ? '' : filter} capsule{filteredCapsules.length !== 1 ? 's' : ''} {searchTerm && `matching "${searchTerm}"`}
+          </span>
+          <div className="flex-1 flex justify-end ">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search capsules..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 border-cyan-400 pr-4 py-2 rounded-lg bg-secondary/50 border focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200 text-sm"
+              />
             </div>
+          </div>
+          <div className="flex items-center rounded-lg bg-secondary/50 p-1 flex-shrink-0">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={cn(
+                'p-2 rounded-md transition-colors',
+                viewMode === 'grid' 
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'hover:bg-secondary'
+              )}
+            >
+              <LayoutGrid className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setViewMode('timeline')}
+              className={cn(
+                'p-2 rounded-md transition-colors',
+                viewMode === 'timeline' 
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'hover:bg-secondary'
+              )}
+            >
+              <List className="h-4 w-4" />
+            </button>
           </div>
         </div>
 
@@ -128,11 +147,11 @@ function Dashboard() {
         {isLoading ? (
           <TimelineSkeleton count={6} />
         ) : (
-          <Timeline capsules={capsules} viewMode={viewMode} />
+          <Timeline capsules={filteredCapsules} viewMode={viewMode} />
         )}
 
         {/* Quick Stats Footer */}
-        {!isLoading && capsules.length > 0 && (
+        {!isLoading && filteredCapsules.length > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

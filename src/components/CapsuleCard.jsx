@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Lock, Unlock, Clock, Flame, Eye, Calendar } from 'lucide-react'
-import { cn, formatDate, getTimeUntilUnlock, truncateText } from '../utils/helpers'
+import { cn, formatDate, getTimeUntilUnlock, getAutoExpireInfo, truncateText } from '../utils/helpers'
 import StatusBadge from './StatusBadge'
 
 const statusConfig = {
@@ -31,6 +31,7 @@ function CapsuleCard({ capsule, index = 0 }) {
   const config = statusConfig[capsule.status] || statusConfig.locked
   const StatusIcon = config.icon
   const timeInfo = capsule.unlockDate ? getTimeUntilUnlock(capsule.unlockDate) : null
+  const expireInfo = capsule.rule === 'auto_expire' ? getAutoExpireInfo(capsule) : null
 
   return (
     <motion.div
@@ -59,12 +60,6 @@ function CapsuleCard({ capsule, index = 0 }) {
             <div className="flex items-center gap-2">
               <StatusBadge status={capsule.status} />
             </div>
-            {capsule.viewCount > 0 && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Eye className="h-3 w-3" />
-                {capsule.viewCount}
-              </div>
-            )}
           </div>
 
           {/* Title */}
@@ -73,9 +68,19 @@ function CapsuleCard({ capsule, index = 0 }) {
           </h3>
 
           {/* Content Preview */}
-          <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-            {truncateText(capsule.content, 100)}
-          </p>
+          <div className="relative mb-4">
+            <p className={cn(
+              'text-sm text-muted-foreground line-clamp-2 transition-all duration-300',
+              capsule.status === 'locked' && 'blur-sm opacity-50'
+            )}>
+              {truncateText(capsule.content, 100)}
+            </p>
+            {capsule.status === 'locked' && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Lock className="h-4 w-4 text-neon-cyan opacity-70" />
+              </div>
+            )}
+          </div>
 
           {/* Media Indicator */}
           {capsule.media && capsule.media.length > 0 && (
@@ -83,7 +88,7 @@ function CapsuleCard({ capsule, index = 0 }) {
               {capsule.media.map((item, i) => (
                 <div
                   key={i}
-                  className="w-12 h-12 rounded-lg bg-secondary/50 overflow-hidden"
+                   className={item.type !== 'text' ? 'w-12 h-12 rounded-lg bg-secondary/50 overflow-hidden' : undefined}
                 >
                   {item.type === 'image' && (
                     <img
@@ -91,6 +96,8 @@ function CapsuleCard({ capsule, index = 0 }) {
                       alt=""
                       className="w-full h-full object-cover"
                     />
+                  )}
+                  {item.type === 'text' && (<div className="space h-12"></div>
                   )}
                   {item.type === 'audio' && (
                     <div className="w-full h-full flex items-center justify-center">
@@ -110,6 +117,11 @@ function CapsuleCard({ capsule, index = 0 }) {
                       </div>
                     </div>
                   )}
+                  {item.type === 'video' && (
+                    <div className="w-full h-full flex items-center justify-center bg-secondary/80">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Video</span>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -122,6 +134,13 @@ function CapsuleCard({ capsule, index = 0 }) {
               {formatDate(capsule.createdAt)}
             </div>
             
+            {capsule.rule === 'auto_expire' && expireInfo && capsule.status !== 'expired' && (
+              <div className="flex items-center gap-1 text-amber-400">
+                <Clock className="h-3 w-3" />
+                <span>Expires in {expireInfo.text}</span>
+              </div>
+            )}
+
             {capsule.status === 'locked' && timeInfo && !timeInfo.canUnlock && (
               <div className="flex items-center gap-1 text-neon-cyan">
                 <Lock className="h-3 w-3" />
@@ -133,8 +152,11 @@ function CapsuleCard({ capsule, index = 0 }) {
               <span className="text-neon-purple animate-pulse">Ready to unlock</span>
             )}
             
-            {capsule.rule === 'destroy_after_view' && capsule.status === 'locked' && (
-              <span className="text-destructive">One-time view</span>
+            {capsule.rule === 'destroy_after_view' && capsule.status !== 'destroyed' && (
+              <div className="flex items-center gap-1 text-destructive">
+                <Flame className="h-3 w-3" />
+                <span>One-time view</span>
+              </div>
             )}
           </div>
 

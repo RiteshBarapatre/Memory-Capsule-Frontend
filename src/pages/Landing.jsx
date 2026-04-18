@@ -1,7 +1,9 @@
-import { Link } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Link, useNavigate, Navigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight, Lock, Clock, Flame, Ghost, Shield, Sparkles } from 'lucide-react'
 import AnimatedButton from '../components/AnimatedButton'
+import { useAuthStore } from '../store'
 
 const features = [
   {
@@ -37,6 +39,19 @@ const features = [
 ]
 
 function Landing() {
+  const navigate = useNavigate()
+  const { isAuthenticated, hasHydrated } = useAuthStore()
+
+  useEffect(() => {
+    if (hasHydrated && isAuthenticated) {
+      navigate('/dashboard', { replace: true })
+    }
+  }, [hasHydrated, isAuthenticated, navigate])
+
+  if (hasHydrated && isAuthenticated) {
+    return <Navigate to="/dashboard" replace />
+  }
+
   return (
     <div className="min-h-screen bg-background gradient-mesh overflow-hidden">
       {/* Hero Section */}
@@ -48,9 +63,9 @@ function Landing() {
             className="flex items-center gap-2"
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-neon-cyan to-neon-purple flex items-center justify-center">
-              <span className="text-background font-bold">MC</span>
+              <span className="text-background font-bold cursor-pointer">MC</span>
             </div>
-            <span className="text-xl font-bold text-gradient">Memory Capsule</span>
+            <span className="text-xl font-bold text-gradient cursor-pointer">Memory Capsule</span>
           </motion.div>
           
           <motion.div
@@ -147,7 +162,7 @@ function Landing() {
                     <Lock className="h-5 w-5 text-neon-cyan" />
                     <span className="text-sm font-medium">Time Capsule</span>
                   </div>
-                  <span className="text-xs text-muted-foreground">Unlocks Dec 31, 2025</span>
+                  <span className="text-xs text-muted-foreground">Unlocks Dec 31, 2026</span>
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Letter to Future Self</h3>
                 <p className="text-muted-foreground mb-4 blur-sm select-none">
@@ -179,7 +194,7 @@ function Landing() {
               </p>
             </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid cursor-pointer grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {features.map((feature, index) => (
                 <motion.div
                   key={feature.title}

@@ -8,6 +8,7 @@ const useAuthStore = create(
       token: null,
       isAuthenticated: false,
       isLoading: false,
+      hasHydrated: false,
       
       login: (userData, token) => {
         set({ 
@@ -30,6 +31,10 @@ const useAuthStore = create(
         set({ isLoading: loading })
       },
       
+      setHydrated: () => {
+        set({ hasHydrated: true })
+      },
+      
       updateUser: (userData) => {
         set({ user: { ...get().user, ...userData } })
       },
@@ -41,6 +46,11 @@ const useAuthStore = create(
         token: state.token, 
         isAuthenticated: state.isAuthenticated 
       }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.hasHydrated = true
+        }
+      },
     }
   )
 )

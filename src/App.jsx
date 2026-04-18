@@ -6,10 +6,13 @@ import Layout from './components/Layout'
 import Landing from './pages/Landing'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 import Dashboard from './pages/Dashboard'
 import CreateCapsule from './pages/CreateCapsule'
 import CapsuleView from './pages/CapsuleView'
 import GhostWall from './pages/GhostWall'
+import MemoryFlow from './pages/MemoryFlow'
 import Profile from './pages/Profile'
 import ProtectedRoute from './components/ProtectedRoute'
 
@@ -23,6 +26,8 @@ function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
           
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
@@ -30,6 +35,7 @@ function App() {
               <Route path="/create" element={<CreateCapsule />} />
               <Route path="/capsule/:id" element={<CapsuleView />} />
               <Route path="/ghost-wall" element={<GhostWall />} />
+              <Route path="/memory-flow" element={<MemoryFlow />} />
               <Route path="/profile" element={<Profile />} />
             </Route>
           </Route>
