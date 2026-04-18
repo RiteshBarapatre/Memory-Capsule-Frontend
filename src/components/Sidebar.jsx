@@ -139,30 +139,6 @@ function Sidebar() {
             </motion.div>
           )}
         </AnimatePresence>
-
-        <div className="mt-auto pt-4">
-          <AnimatePresence>
-            {sidebarOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                className="p-4 rounded-xl bg-gradient-to-br from-neon-purple/20 to-neon-cyan/20 border border-glass-border"
-              >
-                <p className="text-xs text-muted-foreground mb-2">Storage used</p>
-                <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                  <motion.div
-                    className="h-full bg-gradient-to-r from-neon-cyan to-neon-purple"
-                    initial={{ width: 0 }}
-                    animate={{ width: '45%' }}
-                    transition={{ duration: 1, delay: 0.5 }}
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">45% of 10GB</p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
       </div>
     </motion.aside>
   )

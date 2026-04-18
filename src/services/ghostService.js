@@ -20,14 +20,15 @@ export const ghostService = {
     }
   },
 
-  async createPost(content, expiresAt = null) {
+  async createPost(content, expiresAt) {
     try {
-      // Default to 24 hours if no expiresAt provided
-      const expiresTime = expiresAt || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+      if (!expiresAt) {
+        throw new Error('Expiration time is required')
+      }
 
       const response = await api.post('/ghost-posts', {
         content,
-        expiresAt: expiresTime,
+        expiresAt,
         fadeLevel: 0
       })
 
