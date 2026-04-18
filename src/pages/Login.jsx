@@ -177,9 +177,9 @@ function Login() {
                 />
                 <span className="text-sm text-muted-foreground">Remember me</span>
               </label>
-              <button type="button" className="text-sm text-primary hover:underline cursor-pointer">
+              <Link to="/forgot-password" className="text-sm text-primary hover:underline cursor-pointer">
                 Forgot password?
-              </button>
+              </Link>
             </div>
 
             {errors.submit && (
@@ -236,11 +236,6 @@ function Login() {
               Sign up
             </Link>
           </p>
-
-          <div className="mt-6 p-4 rounded-xl bg-secondary/30 border border-glass-border">
-            <p className="text-xs text-muted-foreground mb-2">Demo credentials:</p>
-            <p className="text-sm font-mono">alex@example.com / password123</p>
-          </div>
         </div>
       </motion.div>
 
