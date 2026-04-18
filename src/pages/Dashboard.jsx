@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import useAuthStore from '../store/authStore'
 import { motion } from 'framer-motion'
 import { Plus, LayoutGrid, List, Lock, Unlock, Clock, Flame, Search } from 'lucide-react'
 import { toast } from 'sonner'
@@ -39,18 +40,22 @@ function Dashboard() {
     capsule.content.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
+  const user = useAuthStore((state) => state.user)
+
   useEffect(() => {
     const fetchCapsules = async () => {
       setLoading(true)
       try {
-        const data = await capsuleService.getCapsules()
+        const data = user?.id
+          ? await capsuleService.getCapsulesByUserId(user.id)
+          : await capsuleService.getCapsules()
         setCapsules(data)
       } catch (error) {
         toast.error('Failed to load capsules')
       }
     }
     fetchCapsules()
-  }, [setCapsules, setLoading])
+  }, [setCapsules, setLoading, user])
 
   return (
     <PageTransition>

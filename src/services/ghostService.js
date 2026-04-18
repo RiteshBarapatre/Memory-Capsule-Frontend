@@ -8,7 +8,8 @@ export const ghostService = {
         // Map backend response to frontend format
         const posts = response.data.data.map(post => ({
           ...post,
-          fadeLevel: post.currentFadeLevel || 0, // Ensure fadeLevel is available for frontend
+          fadeLevel: post.currentFadeLevel ?? 0,
+          timeRemaining: post.timeRemaining ?? 0,
         }))
         return posts
       }

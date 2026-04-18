@@ -1,45 +1,32 @@
 import api from './api'
-import { mockUsers, generateToken, delay } from '../utils/mockData'
 
-// Simulated auth service with mock data
+const apiErrorMessage = (error, fallback) => {
+  if (!error.response) {
+    return (
+      error.message ||
+      'Cannot reach the API server. Start the backend and set VITE_API_BASE_URL (see .env.example).'
+    )
+  }
+  return error.response?.data?.message || fallback
+}
+
 export const authService = {
   async login(email, password) {
-    await delay(800)
-    
-    const user = mockUsers.find(
-      (u) => u.email === email && u.password === password
-    )
-    
-    if (!user) {
-      throw new Error('Invalid email or password')
+    try {
+      const { data } = await api.post('/auth/login', { email, password })
+      return data
+    } catch (error) {
+      throw new Error(apiErrorMessage(error, 'Login failed'))
     }
-    
-    const { password: _, ...userWithoutPassword } = user
-    const token = generateToken()
-    
-    return { user: userWithoutPassword, token }
   },
-  
+
   async signup(name, email, password) {
-    await delay(1000)
-    
-    const existingUser = mockUsers.find((u) => u.email === email)
-    if (existingUser) {
-      throw new Error('Email already exists')
+    try {
+      const { data } = await api.post('/auth/register', { name, email, password })
+      return data
+    } catch (error) {
+      throw new Error(apiErrorMessage(error, 'Signup failed'))
     }
-    
-    const newUser = {
-      id: `user_${Date.now()}`,
-      name,
-      email,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
-      createdAt: new Date().toISOString(),
-    }
-    
-    mockUsers.push({ ...newUser, password })
-    const token = generateToken()
-    
-    return { user: newUser, token }
   },
 
   async googleAuth(credential) {
@@ -48,9 +35,7 @@ export const authService = {
       return response.data
     } catch (error) {
       if (!error.response) {
-        throw new Error(
-          'Cannot reach the API server. Start the backend (e.g. npm run dev in Memory-Capsule-Backend) and set VITE_API_BASE_URL to match its URL (see .env.example).'
-        )
+        throw new Error(apiErrorMessage(error, 'Google authentication failed'))
       }
       const message =
         error.response?.data?.message ||
@@ -59,21 +44,22 @@ export const authService = {
       throw new Error(message)
     }
   },
-  
+
   async getCurrentUser() {
-    await delay(300)
-    return mockUsers[0]
-  },
-  
-  async updateProfile(userId, updates) {
-    await delay(500)
-    const userIndex = mockUsers.findIndex((u) => u.id === userId)
-    if (userIndex === -1) {
-      throw new Error('User not found')
+    try {
+      const { data } = await api.get('/auth/me')
+      return data.user
+    } catch {
+      return null
     }
-    
-    mockUsers[userIndex] = { ...mockUsers[userIndex], ...updates }
-    const { password: _, ...userWithoutPassword } = mockUsers[userIndex]
-    return userWithoutPassword
+  },
+
+  async updateProfile(_userId, updates) {
+    try {
+      const { data } = await api.patch('/auth/profile', updates)
+      return data.user
+    } catch (error) {
+      throw new Error(apiErrorMessage(error, 'Failed to update profile'))
+    }
   },
 }

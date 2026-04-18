@@ -27,7 +27,12 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const url = error.config?.url || ''
+    const isAuthAttempt =
+      url.includes('/auth/login') ||
+      url.includes('/auth/register') ||
+      url.includes('/auth/google')
+    if (error.response?.status === 401 && !isAuthAttempt) {
       useAuthStore.getState().logout()
       window.location.href = '/login'
     }
