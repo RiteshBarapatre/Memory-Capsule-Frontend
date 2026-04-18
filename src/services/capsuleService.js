@@ -43,6 +43,11 @@ export const capsuleService = {
     return response.data?.data
   },
 
+  async markCapsuleDestroyed(id) {
+    const response = await api.patch(`/capsules/${id}/destroy`)
+    return response.data?.data
+  },
+
   async deleteCapsule(id) {
     await api.delete(`/capsules/${id}`)
     return { success: true }

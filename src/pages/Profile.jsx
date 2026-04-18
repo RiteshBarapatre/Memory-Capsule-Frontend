@@ -253,7 +253,7 @@ function Profile() {
         >
           <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
           <div className="space-y-2">
-            <button className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/50 transition-colors text-left">
+            {/* <button className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/50 transition-colors text-left">
               <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center">
                 <Settings className="h-5 w-5" />
               </div>
@@ -271,7 +271,7 @@ function Profile() {
                 <p className="font-medium">Privacy & Security</p>
                 <p className="text-sm text-muted-foreground">Manage your data</p>
               </div>
-            </button>
+            </button> */}
             
             <button 
               onClick={handleLogout}

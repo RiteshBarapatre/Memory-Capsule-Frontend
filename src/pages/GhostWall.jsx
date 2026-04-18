@@ -60,6 +60,7 @@ function GhostWall() {
   const [isLoading, setIsLoading] = useState(true);
   const [newPost, setNewPost] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [duration, setDuration] = useState(24); // Default to 24 hours
   const inputRef = useRef(null);
 
   const fetchPosts = async () => {
@@ -91,9 +92,19 @@ function GhostWall() {
     e.preventDefault();
     if (!newPost.trim()) return;
 
+    const numDuration = Number(duration);
+    if (isNaN(numDuration) || numDuration <= 0 || numDuration > 168) {
+      // Max 1 week
+      toast.error("Please enter a valid duration (1-168 hours)");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      const post = await ghostService.createPost(newPost.trim());
+      const expiresAt = new Date(
+        Date.now() + numDuration * 60 * 60 * 1000
+      ).toISOString();
+      const post = await ghostService.createPost(newPost.trim(), expiresAt);
       setPosts((prev) => [post, ...prev]);
       setNewPost("");
       toast.success("Your thought has been released");
@@ -151,16 +162,30 @@ function GhostWall() {
                 className="w-full bg-transparent border-none text-foreground placeholder:text-muted-foreground focus:outline-none resize-none"
               />
               <div className="flex items-center justify-between mt-2">
-                <span
-                  className={cn(
-                    "text-xs",
-                    newPost.length > 250
-                      ? "text-destructive"
-                      : "text-muted-foreground"
-                  )}
-                >
-                  {newPost.length}/280
-                </span>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={cn(
+                      "text-xs",
+                      newPost.length > 250
+                        ? "text-destructive"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {newPost.length}/280
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="number"
+                      min="1"
+                      max="168"
+                      value={duration}
+                      onChange={(e) => setDuration(e.target.value)}
+                      placeholder="Hours"
+                      className="w-16 text-xs bg-transparent border border-border rounded px-2 py-1 text-foreground text-center"
+                    />
+                    <span className="text-xs text-muted-foreground">hrs</span>
+                  </div>
+                </div>
                 <AnimatedButton
                   type="submit"
                   variant="primary"
@@ -184,8 +209,8 @@ function GhostWall() {
           className="p-4 rounded-xl bg-neon-purple/10 border border-neon-purple/30 mb-6"
         >
           <p className="text-sm text-muted-foreground">
-            All posts are anonymous and will gradually fade over 24 hours until
-            they disappear completely. No post history is stored.
+            All posts are anonymous and will gradually fade over the selected
+            time until they disappear completely. No post history is stored.
           </p>
         </motion.div>
 

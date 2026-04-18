@@ -193,3 +193,7 @@
 ::-webkit-scrollbar-thumb:hover {
   background: var(--muted-foreground);
 }
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(2);
+  cursor: pointer;
+}
