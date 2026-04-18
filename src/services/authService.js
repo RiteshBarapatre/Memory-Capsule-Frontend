@@ -62,4 +62,22 @@ export const authService = {
       throw new Error(apiErrorMessage(error, 'Failed to update profile'))
     }
   },
+
+  async forgotPassword(email) {
+    try {
+      const { data } = await api.post('/auth/forgot-password', { email })
+      return data
+    } catch (error) {
+      throw new Error(apiErrorMessage(error, 'Failed to send reset email'))
+    }
+  },
+
+  async resetPassword(token, password) {
+    try {
+      const { data } = await api.post(`/auth/reset-password/${token}`, { password })
+      return data
+    } catch (error) {
+      throw new Error(apiErrorMessage(error, 'Failed to reset password'))
+    }
+  },
 }

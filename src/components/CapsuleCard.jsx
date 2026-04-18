@@ -116,6 +116,11 @@ function CapsuleCard({ capsule, index = 0 }) {
                       </div>
                     </div>
                   )}
+                  {item.type === 'video' && (
+                    <div className="w-full h-full flex items-center justify-center bg-secondary/80">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Video</span>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -139,8 +144,11 @@ function CapsuleCard({ capsule, index = 0 }) {
               <span className="text-neon-purple animate-pulse">Ready to unlock</span>
             )}
             
-            {capsule.rule === 'destroy_after_view' && capsule.status === 'locked' && (
-              <span className="text-destructive">One-time view</span>
+            {capsule.rule === 'destroy_after_view' && capsule.status !== 'destroyed' && (
+              <div className="flex items-center gap-1 text-destructive">
+                <Flame className="h-3 w-3" />
+                <span>One-time view</span>
+              </div>
             )}
           </div>
 
