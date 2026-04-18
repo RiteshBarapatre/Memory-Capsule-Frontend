@@ -21,7 +21,7 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState({})
 
-  const from = location.state?.from?.pathname || '/dashboard'
+  const from = location.state?.from || '/dashboard'
   const isGoogleEnabled = Boolean(import.meta.env.VITE_GOOGLE_CLIENT_ID)
 
   const handleChange = (e) => {
@@ -228,7 +228,11 @@ function Login() {
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
             {"Don't have an account? "}
-            <Link to="/signup" className="text-primary hover:underline font-medium">
+            <Link
+              to="/signup"
+              state={{ from: location.state?.from }}
+              className="text-primary hover:underline font-medium"
+            >
               Sign up
             </Link>
           </p>

@@ -12,7 +12,7 @@ import AnimatedButton from '../components/AnimatedButton'
 import StatusBadge from '../components/StatusBadge'
 import Modal from '../components/Modal'
 import { Skeleton } from '../components/LoadingSkeleton'
-import { useCapsuleStore } from '../store'
+import { useCapsuleStore, useAuthStore } from '../store'
 import { capsuleService } from '../services'
 import { formatDate, getTimeUntilUnlock, cn } from '../utils/helpers'
 
@@ -20,6 +20,7 @@ function CapsuleView() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { currentCapsule, setCurrentCapsule, updateCapsule, removeCapsule } = useCapsuleStore()
+  const { user } = useAuthStore()
   
   const [isLoading, setIsLoading] = useState(true)
   const [isUnlocking, setIsUnlocking] = useState(false)
@@ -47,29 +48,41 @@ function CapsuleView() {
     setIsUnlocking(true)
     try {
       const updated = await capsuleService.unlockCapsule(id)
+      console.log('Unlock response:', updated)  // Debug log
       setShowUnlockAnimation(true)
       playUIAudio('confirm')
       
+      // Display unlock animation
       setTimeout(() => {
+        setShowUnlockAnimation(false)
         setCurrentCapsule(updated)
         updateCapsule(id, updated)
-        setShowUnlockAnimation(false)
         
-        if (updated.rule === 'destroy_after_view') {
+        // If destroy_after_view, show destruction animation
+        if (updated?.rule === 'destroy_after_view' && updated?.status === 'destroyed') {
+          console.log('Triggering destroy animation')  // Debug log
           setTimeout(() => {
             playUIAudio('danger')
             setShowDestroyAnimation(true)
+            
+            // Show the destroy animation for 3 seconds, then reset state
             setTimeout(() => {
-              updateCapsule(id, { status: 'destroyed' })
-              setCurrentCapsule({ ...updated, status: 'destroyed' })
               setShowDestroyAnimation(false)
               toast.info('Capsule has been destroyed after viewing')
+              
+              // Redirect back to dashboard after 2 more seconds
+              setTimeout(() => {
+                navigate('/dashboard')
+              }, 2000)
             }, 3000)
-          }, 5000)
+          }, 1000)
+        } else {
+          console.log('Not destroying - rule:', updated?.rule, 'status:', updated?.status)  // Debug log
         }
       }, 2000)
     } catch (error) {
       toast.error(error.message || 'Cannot unlock yet')
+      console.error('Unlock error:', error)
     } finally {
       setIsUnlocking(false)
     }
@@ -83,6 +96,26 @@ function CapsuleView() {
       navigate('/dashboard')
     } catch (error) {
       toast.error('Failed to delete capsule')
+    }
+  }
+
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/capsule/${id}`
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: currentCapsule?.title || 'Memory Capsule',
+          text: 'Check out this memory capsule',
+          url: shareUrl,
+        })
+        toast.success('Capsule link shared')
+      } else {
+        await navigator.clipboard.writeText(shareUrl)
+        toast.success('Capsule link copied to clipboard')
+      }
+    } catch (error) {
+      toast.error('Unable to share the link')
     }
   }
 
@@ -225,16 +258,18 @@ function CapsuleView() {
               </div>
               
               <div className="flex items-center gap-2">
-                <AnimatedButton variant="ghost" size="icon">
+                <AnimatedButton variant="ghost" size="icon" onClick={handleShare}>
                   <Share2 className="h-5 w-5" />
                 </AnimatedButton>
-                <AnimatedButton 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={() => setShowDeleteModal(true)}
-                >
-                  <Trash2 className="h-5 w-5 text-destructive" />
-                </AnimatedButton>
+                {currentCapsule?.userId === user?.id && (
+                  <AnimatedButton 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => setShowDeleteModal(true)}
+                  >
+                    <Trash2 className="h-5 w-5 text-destructive" />
+                  </AnimatedButton>
+                )}
               </div>
             </div>
 

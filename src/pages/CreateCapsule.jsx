@@ -52,6 +52,12 @@ function CreateCapsule() {
   }
 
   const handleGenerateMessage = async () => {
+    // Validate title first
+    if (!formData.title.trim()) {
+      toast.error('Please add a title first before generating a message')
+      return
+    }
+
     setIsGenerating(true)
     try {
       const message = await capsuleService.generateAIMessage(formData.title)
@@ -61,7 +67,7 @@ function CreateCapsule() {
       }))
       toast.success('Message generated!')
     } catch (error) {
-      toast.error('Failed to generate message')
+      toast.error(error.message || 'Failed to generate message')
     } finally {
       setIsGenerating(false)
     }
@@ -363,7 +369,7 @@ function CreateCapsule() {
                         value={formData.unlockDate}
                         onChange={handleChange}
                         min={new Date().toISOString().slice(0, 16)}
-                        className="w-full h-12 px-4 rounded-xl bg-secondary/50 border border-glass-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        className="w-full h-12 px-4 rounded-xl bg-primary/10 border border-primary/30 text-foreground focus:outline-none focus:ring-2 focus:ring-neon-cyan/50 focus:border-neon-cyan/50"
                       />
                     </motion.div>
                   )}
@@ -384,7 +390,7 @@ function CreateCapsule() {
                         onChange={handleChange}
                         min={1}
                         max={365}
-                        className="w-full h-12 px-4 rounded-xl bg-secondary/50 border border-glass-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        className="w-full h-12 px-4 rounded-xl bg-primary/10 border border-primary/30 text-foreground focus:outline-none focus:ring-2 focus:ring-neon-cyan/50 focus:border-neon-cyan/50 [&::-webkit-outer-spin-button]:text-foreground [&::-webkit-inner-spin-button]:text-foreground"
                       />
                     </motion.div>
                   )}

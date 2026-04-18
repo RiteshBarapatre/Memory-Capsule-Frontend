@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { User, Mail, Lock, Eye, EyeOff, ArrowRight, Check } from 'lucide-react'
 import { toast } from 'sonner'
@@ -16,8 +16,11 @@ const passwordRequirements = [
 
 function Signup() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { login, setLoading, isLoading } = useAuthStore()
   const isGoogleEnabled = Boolean(import.meta.env.VITE_GOOGLE_CLIENT_ID)
+
+  const from = location.state?.from || '/dashboard'
   
   const [formData, setFormData] = useState({
     name: '',
@@ -76,7 +79,7 @@ function Signup() {
       )
       login(user, token)
       toast.success('Account created successfully!')
-      navigate('/dashboard')
+      navigate(from, { replace: true })
     } catch (error) {
       toast.error(error.message || 'Signup failed')
       setErrors({ submit: error.message })
@@ -97,7 +100,7 @@ function Signup() {
       const { user, token } = await authService.googleAuth(credentialResponse.credential)
       login(user, token)
       toast.success('Account created with Google!')
-      navigate('/dashboard')
+      navigate(from, { replace: true })
     } catch (error) {
       toast.error(error.message || 'Google signup failed')
       setErrors({ submit: error.message })
@@ -361,7 +364,7 @@ function Signup() {
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
             Already have an account?{' '}
-            <Link to="/login" className="text-primary hover:underline font-medium">
+            <Link to="/login" state={{ from }} className="text-primary hover:underline font-medium">
               Sign in
             </Link>
           </p>
