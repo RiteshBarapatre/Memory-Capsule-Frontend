@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard'
 import CreateCapsule from './pages/CreateCapsule'
 import CapsuleView from './pages/CapsuleView'
 import GhostWall from './pages/GhostWall'
+import MemoryFlow from './pages/MemoryFlow'
 import Profile from './pages/Profile'
 import ProtectedRoute from './components/ProtectedRoute'
 
@@ -30,6 +31,7 @@ function App() {
               <Route path="/create" element={<CreateCapsule />} />
               <Route path="/capsule/:id" element={<CapsuleView />} />
               <Route path="/ghost-wall" element={<GhostWall />} />
+              <Route path="/memory-flow" element={<MemoryFlow />} />
               <Route path="/profile" element={<Profile />} />
             </Route>
           </Route>
