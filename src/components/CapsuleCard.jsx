@@ -67,9 +67,19 @@ function CapsuleCard({ capsule, index = 0 }) {
           </h3>
 
           {/* Content Preview */}
-          <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-            {truncateText(capsule.content, 100)}
-          </p>
+          <div className="relative mb-4">
+            <p className={cn(
+              'text-sm text-muted-foreground line-clamp-2 transition-all duration-300',
+              capsule.status === 'locked' && 'blur-sm opacity-50'
+            )}>
+              {truncateText(capsule.content, 100)}
+            </p>
+            {capsule.status === 'locked' && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Lock className="h-4 w-4 text-neon-cyan opacity-70" />
+              </div>
+            )}
+          </div>
 
           {/* Media Indicator */}
           {capsule.media && capsule.media.length > 0 && (

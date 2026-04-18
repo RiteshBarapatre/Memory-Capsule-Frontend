@@ -1,7 +1,9 @@
-import { Link } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Link, useNavigate, Navigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight, Lock, Clock, Flame, Ghost, Shield, Sparkles } from 'lucide-react'
 import AnimatedButton from '../components/AnimatedButton'
+import { useAuthStore } from '../store'
 
 const features = [
   {
@@ -37,6 +39,19 @@ const features = [
 ]
 
 function Landing() {
+  const navigate = useNavigate()
+  const { isAuthenticated, hasHydrated } = useAuthStore()
+
+  useEffect(() => {
+    if (hasHydrated && isAuthenticated) {
+      navigate('/dashboard', { replace: true })
+    }
+  }, [hasHydrated, isAuthenticated, navigate])
+
+  if (hasHydrated && isAuthenticated) {
+    return <Navigate to="/dashboard" replace />
+  }
+
   return (
     <div className="min-h-screen bg-background gradient-mesh overflow-hidden">
       {/* Hero Section */}
